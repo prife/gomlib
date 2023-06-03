@@ -93,7 +93,7 @@ func (r *Registry) Device(id int) (DeviceEntry, error) {
 	r.Lock()
 	defer r.Unlock()
 	for _, d := range r.devices {
-		if d.DeviceID() == id {
+		if d.ID() == id {
 			return d, nil
 		}
 	}
@@ -140,15 +140,15 @@ func (r *Registry) AddDevice(ctx context.Context, d DeviceEntry) {
 	defer r.Unlock()
 	for _, t := range r.devices {
 		if t.Serial() == d.Serial() {
-			if t.DeviceID() != d.DeviceID() {
+			if t.ID() != d.ID() {
 				log.Panicf("registry: add same device with different DeviceID %v, %v:%v",
-					d.Serial(), t.DeviceID(), d.DeviceID())
+					d.Serial(), t.ID(), d.ID())
 			}
 			return // already added
 		}
 	}
 
-	log.Infof("registry: adding new device, serial:%v, id:%v", d.Serial(), d.DeviceID())
+	log.Infof("registry: adding new device, serial:%v, id:%v", d.Serial(), d.ID())
 	ctx, cancel := context.WithCancel(ctx)
 	r.ctxMap[d.Serial()] = Ctx{ctx, cancel}
 	r.devices = append(r.devices, d)
@@ -164,7 +164,7 @@ func (r *Registry) RemoveDevice(d DeviceEntry) {
 	defer r.Unlock()
 	for i, t := range r.devices {
 		if t.Serial() == d.Serial() /*t.DeviceID == d.DeviceID */ {
-			log.Infof("registry: removing existing device %s:%d", t.Serial(), t.DeviceID())
+			log.Infof("registry: removing existing device %s:%d", t.Serial(), t.ID())
 			copy(r.devices[i:], r.devices[i+1:])
 			r.devices = r.devices[:len(r.devices)-1]
 
@@ -187,7 +187,7 @@ func (r *Registry) RemoveAll() {
 	r.Lock()
 	defer r.Unlock()
 	for i, t := range r.devices {
-		log.Infof("registry: removing all [%d]:%v,%v", i, t.Serial(), t.DeviceID())
+		log.Infof("registry: removing all [%d]:%v,%v", i, t.Serial(), t.ID())
 		ctx := r.ctxMap[t.Serial()]
 		for l := range r.listeners {
 			l.OnDeviceRemoved(ctx.ctx, t)

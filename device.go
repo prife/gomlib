@@ -9,7 +9,7 @@ const (
 
 type DeviceEntry interface {
 	Serial() string
-	DeviceID() int
+	ID() int // for Android it is transport_id, for iOS it is DeviceID
 	ConnType() string
 	OSType() OSType
 }
