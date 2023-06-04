@@ -93,7 +93,7 @@ func (r *Registry) Device(id int) (DeviceEntry, error) {
 	r.Lock()
 	defer r.Unlock()
 	for _, d := range r.devices {
-		if d.ID() == id {
+		if d.GetID() == id {
 			return d, nil
 		}
 	}
@@ -107,7 +107,7 @@ func (r *Registry) DeviceBySerial(serial string) (DeviceEntry, error) {
 	r.Lock()
 	defer r.Unlock()
 	for _, d := range r.devices {
-		if d.Serial() == serial {
+		if d.GetSerial() == serial {
 			return d, nil
 		}
 	}
@@ -139,18 +139,18 @@ func (r *Registry) AddDevice(ctx context.Context, d DeviceEntry) {
 	r.Lock()
 	defer r.Unlock()
 	for _, t := range r.devices {
-		if t.Serial() == d.Serial() {
-			if t.ID() != d.ID() {
+		if t.GetSerial() == d.GetSerial() {
+			if t.GetID() != d.GetID() {
 				log.Panicf("registry: add same device with different DeviceID %v, %v:%v",
-					d.Serial(), t.ID(), d.ID())
+					d.GetSerial(), t.GetID(), d.GetID())
 			}
 			return // already added
 		}
 	}
 
-	log.Infof("registry: adding new device, serial:%v, id:%v", d.Serial(), d.ID())
+	log.Infof("registry: adding new device, serial:%v, id:%v", d.GetSerial(), d.GetID())
 	ctx, cancel := context.WithCancel(ctx)
-	r.ctxMap[d.Serial()] = Ctx{ctx, cancel}
+	r.ctxMap[d.GetSerial()] = Ctx{ctx, cancel}
 	r.devices = append(r.devices, d)
 
 	for l := range r.listeners {
@@ -163,20 +163,20 @@ func (r *Registry) RemoveDevice(d DeviceEntry) {
 	r.Lock()
 	defer r.Unlock()
 	for i, t := range r.devices {
-		if t.Serial() == d.Serial() /*t.DeviceID == d.DeviceID */ {
-			log.Infof("registry: removing existing device %s:%d", t.Serial(), t.ID())
+		if t.GetSerial() == d.GetSerial() /*t.DeviceID == d.DeviceID */ {
+			log.Infof("registry: removing existing device %s:%d", t.GetSerial(), t.GetID())
 			copy(r.devices[i:], r.devices[i+1:])
 			r.devices = r.devices[:len(r.devices)-1]
 
 			// Invoke listeners
-			ctx := r.ctxMap[t.Serial()]
+			ctx := r.ctxMap[t.GetSerial()]
 			for l := range r.listeners {
 				l.OnDeviceRemoved(ctx.ctx, t)
 			}
 			ctx.cancel()
 
 			// Delete ctx map
-			delete(r.ctxMap, t.Serial())
+			delete(r.ctxMap, t.GetSerial())
 			return
 		}
 	}
@@ -187,8 +187,8 @@ func (r *Registry) RemoveAll() {
 	r.Lock()
 	defer r.Unlock()
 	for i, t := range r.devices {
-		log.Infof("registry: removing all [%d]:%v,%v", i, t.Serial(), t.ID())
-		ctx := r.ctxMap[t.Serial()]
+		log.Infof("registry: removing all [%d]:%v,%v", i, t.GetSerial(), t.GetID())
+		ctx := r.ctxMap[t.GetSerial()]
 		for l := range r.listeners {
 			l.OnDeviceRemoved(ctx.ctx, t)
 		}

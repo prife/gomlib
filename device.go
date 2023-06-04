@@ -8,10 +8,10 @@ const (
 )
 
 type DeviceEntry interface {
-	Serial() string
-	ID() int // for Android it is transport_id, for iOS it is DeviceID
-	ConnType() string
-	OSType() OSType
+	GetSerial() string
+	GetID() int // for Android it is transport_id, for iOS it is DeviceID
+	GetConnType() string
+	GetOSType() OSType
 }
 
 type ActionListener interface {
