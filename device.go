@@ -3,11 +3,30 @@ package gomlib
 type OSType int
 
 const (
-	OSAndroid OSType = iota + 1
+	OSAndroid OSType = iota + 0
 	OSIOS
+	OSReserved
+	OSHarmony
+	OSIPadOS
 )
 
+func (t OSType) String() string {
+	switch t {
+	case OSAndroid:
+		return "Android"
+	case OSIOS:
+		return "iOS"
+	case OSIPadOS:
+		return "iPadOS"
+	case OSHarmony:
+		return "HarmonyOS"
+	default:
+		return "Unknown"
+	}
+}
+
 type DeviceEntry interface {
+	GetState() string
 	GetSerial() string
 	GetID() int // for Android it is transport_id, for iOS it is DeviceID
 	GetConnType() string
