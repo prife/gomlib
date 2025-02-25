@@ -5,7 +5,24 @@ type OSType int
 const (
 	OSAndroid OSType = iota + 1
 	OSIOS
+	OSHarmony
+	OSIPadOS OSType = 10
 )
+
+func (t OSType) String() string {
+	switch t {
+	case OSAndroid:
+		return "Android"
+	case OSIOS:
+		return "iOS"
+	case OSIPadOS:
+		return "iPadOS"
+	case OSHarmony:
+		return "HarmonyOS"
+	default:
+		return "Unknown"
+	}
+}
 
 type DeviceEntry interface {
 	Serial() string
