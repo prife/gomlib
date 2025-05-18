@@ -1,6 +1,7 @@
 package linebreak
 
 import (
+	"io"
 	"strings"
 )
 
@@ -22,6 +23,14 @@ ERROR: Install failed. Got error "ApplicationVerificationFailed" with code 0xe80
 type StringBreak struct {
 	buf strings.Builder
 	Log func(line string)
+}
+
+var _ io.Writer = (*StringBreak)(nil)
+
+func NewStringBreak(log func(line string)) *StringBreak {
+	return &StringBreak{
+		Log: log,
+	}
 }
 
 func checkLineBreak(b []byte) bool {

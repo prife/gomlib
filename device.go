@@ -6,6 +6,10 @@ const (
 	OSAndroid OSType = iota + 1
 	OSIOS
 	OSHarmony
+	OSHarmonyNext
+	OSWindows
+	OSMacOS
+	OSLinux
 	OSIPadOS OSType = 10
 )
 
@@ -19,6 +23,14 @@ func (t OSType) String() string {
 		return "iPadOS"
 	case OSHarmony:
 		return "HarmonyOS"
+	case OSHarmonyNext:
+		return "HarmonyNext"
+	case OSWindows:
+		return "Windows"
+	case OSMacOS:
+		return "macOS"
+	case OSLinux:
+		return "Linux"
 	default:
 		return "Unknown"
 	}

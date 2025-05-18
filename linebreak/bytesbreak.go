@@ -2,11 +2,20 @@ package linebreak
 
 import (
 	"bytes"
+	"io"
 )
+
+var _ io.Writer = (*BytesBreak)(nil)
 
 type BytesBreak struct {
 	buf bytes.Buffer
 	Log func([]byte)
+}
+
+func NewBytesBreak(log func([]byte)) *BytesBreak {
+	return &BytesBreak{
+		Log: log,
+	}
 }
 
 func (l *BytesBreak) Write(b []byte) (n int, err error) {
