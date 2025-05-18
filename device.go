@@ -3,6 +3,18 @@ package gomlib
 type OSType int
 
 const (
+	Android OSType = iota + 1
+	IOS
+	HarmonyOS
+	HarmonyOSNext
+	Windows
+	MacOS
+	Linux
+	IPadOS OSType = 10
+)
+
+// deprecated
+const (
 	OSAndroid OSType = iota + 1
 	OSIOS
 	OSHarmony
@@ -15,21 +27,21 @@ const (
 
 func (t OSType) String() string {
 	switch t {
-	case OSAndroid:
+	case Android:
 		return "Android"
-	case OSIOS:
+	case IOS:
 		return "iOS"
-	case OSIPadOS:
+	case IPadOS:
 		return "iPadOS"
-	case OSHarmony:
+	case HarmonyOS:
 		return "HarmonyOS"
-	case OSHarmonyNext:
+	case HarmonyOSNext:
 		return "HarmonyNext"
-	case OSWindows:
+	case Windows:
 		return "Windows"
-	case OSMacOS:
+	case MacOS:
 		return "macOS"
-	case OSLinux:
+	case Linux:
 		return "Linux"
 	default:
 		return "Unknown"
