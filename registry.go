@@ -201,6 +201,32 @@ func (r *Registry) RemoveAll() {
 	r.devices = make([]DeviceEntry, 0)
 }
 
+// RemoveDevicesByOSType removes all devices matching the specified OS type
+func (r *Registry) RemoveDevicesByOSType(os OSType) {
+	r.Lock()
+	defer r.Unlock()
+
+	// Create a new slice to hold remaining devices
+	var remainingDevices []DeviceEntry
+	for _, t := range r.devices {
+		if t.OSType() != os {
+			remainingDevices = append(remainingDevices, t)
+		} else {
+			// notify all listeners about device removal
+			ctx := r.ctxMap[t.Serial()]
+			for l := range r.listeners {
+				l.OnDeviceRemoved(ctx.ctx, t)
+			}
+			ctx.cancel()
+			// remove from context map
+			delete(r.ctxMap, t.Serial())
+		}
+	}
+
+	// 更新设备列表
+	r.devices = remainingDevices
+}
+
 // DeviceProperty returns the property with the key k for the device d,
 // previously set with SetDeviceProperty. If the property for the device does
 // not exist then nil is returned.
